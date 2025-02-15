@@ -1,0 +1,3 @@
+doc1	Hadoop is an open-source framework for processing big data.
+doc2	Big data processing is efficiently handled by Hadoop.
+doc3	Machine learning algorithms can be applied on Hadoop datasets.

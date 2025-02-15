@@ -170,3 +170,92 @@ If you want to download the output to your local machine:
 hdfs dfs -get /output_final /path/to/local/output
 ```
 ---
+Here's how you can structure the sections for your project:
+
+### 1. **Project Overview**
+
+The goal of this project is to compute the document similarity using a MapReduce approach, based on the **Jaccard Similarity** metric. The project takes multiple documents as input, processes them to extract word sets, and calculates pairwise similarity between the documents. The similarity score is output in percentage format, where higher values indicate more similarity in terms of shared words between the document pairs.
+
+---
+
+### 2. **Approach and Implementation**
+
+#### **Mapper Logic:**
+
+- **Input**: The Mapper takes each document as input (from the input text file), processes the text, and creates key-value pairs where the key is a unique identifier for the document (e.g., `doc1`, `doc2`, etc.), and the value is a list of words from the document.
+  
+- **Process**: The Mapper tokenizes the document into individual words, converts them to lowercase for uniformity, and outputs each word along with its corresponding document identifier. This helps later group the words from the same document for comparison.
+
+- **Output**: The Mapper emits key-value pairs like `(document_id, word)` for each word in a document. These key-value pairs are then sent to the Reducer.
+
+#### **Reducer Logic:**
+
+- **Input**: The Reducer receives the key-value pairs output from the Mapper, where the key is the document identifier, and the value is a list of words (from multiple documents).
+
+- **Process**: The Reducer takes the word lists from the Mapper, compares them document-by-document, and computes the Jaccard similarity for each pair. The Jaccard similarity is computed using the formula:
+  
+  \[
+  \text{Jaccard Similarity} = \frac{\text{Intersection of Words}}{\text{Union of Words}}
+  \]
+
+- **Output**: The Reducer then outputs the similarity score for each document pair in the format `doc1, doc2 -> 60%`.
+
+---
+
+### 3. **Execution Steps**
+
+#### **Step 1**: **Build the project**
+- Use Maven to compile the project.
+
+```bash
+mvn clean install
+```
+
+#### **Step 2**: **Run the Hadoop job**
+
+- To submit the job to Hadoop, run the following command:
+
+```bash
+hadoop jar DocumentSimilarity.jar com.example.DocumentSimilarityDriver /input /output_similarity
+```
+
+Here, `/input` is the HDFS directory containing the input files, and `/output_similary` is the directory where the result will be stored.
+
+#### **Step 3**: **Check the output**
+
+- After the job completes, you can check the output using:
+
+```bash
+hdfs dfs -cat /output_similarity/part-r-00000
+```
+
+---
+
+### 4. **Challenges Faced & Solutions**
+Faced challenge in writting code but later able to write.
+---
+
+### 5. **Sample Input and Output**
+
+#### **Sample Input**:
+
+```text
+doc1	Hadoop is an open-source framework for processing big data.
+doc2	Big data processing is efficiently handled by Hadoop.
+doc3	Machine learning algorithms can be applied on Hadoop datasets.
+```
+
+#### **Expected Output**:
+
+```
+doc1,doc2    28.57%
+doc1,doc3    5.88%
+doc2,doc3    6.67%
+```
+
+### Explanation of the Output:
+- The Jaccard similarity between `doc1` and `doc2` is 28.57%, meaning they share around 28.57% of their words in common.
+- `doc1` and `doc3` share only "Hadoop", so the similarity is low at 5.88%.
+- `doc2` and `doc3` also only share "Hadoop", yielding a similarity of 6.67%.
+
+This output is based on the assumption that the words are treated case-insensitively and punctuation is ignored.
