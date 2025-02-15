@@ -1,4 +1,4 @@
-package com.example.controller;
+package com.example;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
